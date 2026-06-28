@@ -4,7 +4,6 @@ const Dashboard = () => {
   return (
     <div>
       <div>Dashboard</div>
-      <UserMenuWithSession variant='compact' />
     </div>
   )
 }

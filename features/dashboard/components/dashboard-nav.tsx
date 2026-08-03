@@ -3,10 +3,11 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
-    LayoutIcon,
+    Gauge,
     GitBranch,
     GithubLogo,
     Gear,
+    GitPullRequest,
 } from "@phosphor-icons/react";
 
 import {
@@ -23,8 +24,9 @@ import {
 } from "@/components/ui/sidebar";
 
 const NAV_ICONS = {
-    "layout-dashboard": LayoutIcon,
+    "layout-dashboard": Gauge,
     "folder-git-2": GitBranch,
+    "git-pull-request": GitPullRequest,
     github: GithubLogo,
     settings: Gear,
 } as const;
@@ -41,7 +43,9 @@ export function DashboardNav() {
 
     return (
         <SidebarGroup>
-            <SidebarGroupLabel>Workspace</SidebarGroupLabel>
+            <SidebarGroupLabel className="text-[11px] uppercase tracking-wider text-muted-foreground/70">
+                Workspace
+            </SidebarGroupLabel>
             <SidebarGroupContent>
                 <SidebarMenu>
                     {DASHBOARD_NAV_ITEMS.map((item) => {
@@ -55,7 +59,10 @@ export function DashboardNav() {
                                     tooltip={item.title}
                                     render={
                                         <Link href={item.href}>
-                                            <Icon />
+                                            <Icon
+                                                weight={active ? "fill" : "regular"}
+                                                className="size-[18px]"
+                                            />
                                             <span>{item.title}</span>
                                         </Link>
                                     }

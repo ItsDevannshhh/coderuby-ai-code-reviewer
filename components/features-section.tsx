@@ -90,14 +90,15 @@ const features = [
 
 export function FeaturesSection() {
   return (
-    <section id="features" className="scroll-mt-16 border-t border-border bg-background">
-      <div className="mx-auto max-w-6xl px-4 py-20 sm:px-6 lg:px-8">
+    <section id="features" className="scroll-mt-16 border-t border-border/40 bg-background">
+      <div className="mx-auto max-w-6xl px-4 py-24 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-2xl text-center">
-          <p className="text-sm font-semibold tracking-wide text-primary uppercase">
+          <p className="text-sm font-semibold tracking-widest text-primary uppercase">
             Features
           </p>
           <h2 className="mt-3 text-balance font-serif text-4xl font-light tracking-tight sm:text-5xl">
-            Everything you need for smarter reviews
+            Everything you need for{' '}
+            <span className="text-gradient-ruby">smarter reviews</span>
           </h2>
           <p className="mt-4 text-pretty text-lg leading-relaxed text-muted-foreground">
             A production-ready platform built to review pull requests with full
@@ -105,16 +106,19 @@ export function FeaturesSection() {
           </p>
         </div>
 
-        <div className="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {features.map((feature) => (
+        <div className="mt-16 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          {features.map((feature, index) => (
             <div
               key={feature.title}
-              className="group rounded-2xl border border-border bg-card p-6 transition-all duration-200 hover:-translate-y-1 hover:border-primary/40 hover:shadow-lg hover:shadow-primary/5"
+              className="card-premium group rounded-2xl p-6"
+              style={{ animationDelay: `${index * 40}ms` }}
             >
-              <span className="flex size-11 items-center justify-center rounded-xl bg-accent text-accent-foreground transition-colors group-hover:bg-primary group-hover:text-primary-foreground">
+              <span className="flex size-11 items-center justify-center rounded-xl bg-primary/8 text-primary/70 transition-all duration-300 group-hover:bg-primary group-hover:text-primary-foreground group-hover:shadow-lg group-hover:shadow-primary/20">
                 <feature.icon className="size-5" aria-hidden="true" />
               </span>
-              <h3 className="mt-5 text-lg font-semibold">{feature.title}</h3>
+              <h3 className="mt-5 text-base font-semibold tracking-tight">
+                {feature.title}
+              </h3>
               <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
                 {feature.description}
               </p>

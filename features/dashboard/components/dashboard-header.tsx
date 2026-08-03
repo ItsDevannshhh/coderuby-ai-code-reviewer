@@ -20,18 +20,22 @@ type DashboardHeaderProps = {
  *
  * @param title - Primary heading (e.g. "Repositories").
  * @param description - Optional subtitle shown below the title.
- * @returns A `<header>` element with sidebar toggle and title block.
+ * @returns A `<header>` element with sidebar trigger and title block.
  */
 export function DashboardHeader({ title, description }: DashboardHeaderProps) {
     return (
-        <header className="flex h-14 shrink-0 items-center gap-2 border-b border-border px-4">
+        <header className="flex h-16 shrink-0 items-center gap-3 border-b border-border/60 px-6">
             {/* Opens/closes the sidebar on smaller screens or icon-collapsed mode */}
-            <SidebarTrigger className="-ml-1" />
-            <Separator orientation="vertical" className="mr-2 h-4" />
-            <div className="flex min-w-0 flex-col">
-                <h1 className="truncate text-sm font-medium">{title}</h1>
+            <SidebarTrigger className="-ml-1.5" />
+            <Separator orientation="vertical" className="mr-1 h-5" />
+            <div className="flex min-w-0 flex-col gap-0.5">
+                <h1 className="truncate text-base font-semibold tracking-tight">
+                    {title}
+                </h1>
                 {description ? (
-                    <p className="truncate text-xs text-muted-foreground">{description}</p>
+                    <p className="truncate text-xs text-muted-foreground">
+                        {description}
+                    </p>
                 ) : null}
             </div>
         </header>

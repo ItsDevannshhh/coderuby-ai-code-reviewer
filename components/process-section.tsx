@@ -14,14 +14,15 @@ const steps = [
 
 export function ProcessSection() {
   return (
-    <section id="process" className="scroll-mt-16 border-t border-border bg-secondary/50">
-      <div className="mx-auto max-w-3xl px-4 py-20 sm:px-6 lg:px-8">
+    <section id="process" className="scroll-mt-16 border-t border-border/40 bg-surface-1">
+      <div className="mx-auto max-w-3xl px-4 py-24 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-2xl text-center">
-          <p className="text-sm font-semibold tracking-wide text-primary uppercase">
+          <p className="text-sm font-semibold tracking-widest text-primary uppercase">
             How it works
           </p>
           <h2 className="mt-3 text-balance font-serif text-4xl font-light tracking-tight sm:text-5xl">
-            From install to review, automatically
+            From install to review,{' '}
+            <span className="text-gradient-ruby">automatically</span>
           </h2>
           <p className="mt-4 text-pretty text-lg leading-relaxed text-muted-foreground">
             CodeRuby understands your repository before it ever reviews a line of
@@ -29,16 +30,19 @@ export function ProcessSection() {
           </p>
         </div>
 
-        <ol className="relative mt-14 border-l border-border pl-8">
+        <ol className="relative mt-16 border-l-2 border-primary/15 pl-10">
           {steps.map((item, index) => (
-            <li key={item.title} className="relative pb-8 last:pb-0">
+            <li key={item.title} className="relative pb-10 last:pb-0">
+              {/* Step number circle */}
               <span
                 aria-hidden="true"
-                className="absolute -left-[41px] flex size-8 items-center justify-center rounded-full border border-border bg-card text-xs font-semibold text-primary"
+                className="absolute -left-[45px] flex size-9 items-center justify-center rounded-full border-2 border-primary/25 bg-background text-xs font-bold text-primary shadow-sm shadow-primary/10 transition-all duration-300 hover:border-primary/60 hover:shadow-md hover:shadow-primary/20"
               >
                 {index + 1}
               </span>
-              <h3 className="text-base font-semibold leading-none">{item.title}</h3>
+              <h3 className="text-base font-semibold leading-none tracking-tight">
+                {item.title}
+              </h3>
               <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
                 {item.description}
               </p>

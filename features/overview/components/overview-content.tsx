@@ -8,7 +8,14 @@
 import type { ComponentType } from "react";
 import Link from "next/link";
 import { formatDistanceToNow } from "date-fns";
-import { FolderGit2Icon, GitPullRequestIcon, SparklesIcon } from "lucide-react";
+import {
+    FolderGit2Icon,
+    GitPullRequestIcon,
+    SparklesIcon,
+    ArrowRightIcon,
+    ActivityIcon,
+    ZapIcon,
+} from "lucide-react";
 
 import { GithubIcon } from "@/features/dashboard/components/icons/github-icon";
 import { DASHBOARD_ROUTES } from "@/features/dashboard/lib/routes";
@@ -108,7 +115,7 @@ type StatCard = {
     value: string;
     description: string;
     icon: ComponentType<{ className?: string }>;
-    accent?: "success" | "info";
+    accent?: "success" | "info" | "ruby";
 };
 
 /**
@@ -156,6 +163,7 @@ function buildStats(overview: OverviewData): StatCard[] {
             value: reviewsStat.value,
             description: reviewsStat.description,
             icon: GitPullRequestIcon,
+            accent: "ruby",
         },
         {
             title: "GitHub App",
@@ -174,6 +182,76 @@ function buildStats(overview: OverviewData): StatCard[] {
     ];
 }
 
+/** Accent color mappings for stat cards. */
+const ACCENT_STYLES = {
+    success: {
+        border: "border-emerald-500/20",
+        iconBg: "bg-emerald-500/10",
+        iconColor: "text-emerald-600 dark:text-emerald-400",
+        valueColor: "text-emerald-700 dark:text-emerald-400",
+    },
+    info: {
+        border: "border-blue-500/20",
+        iconBg: "bg-blue-500/10",
+        iconColor: "text-blue-600 dark:text-blue-400",
+        valueColor: "text-blue-700 dark:text-blue-400",
+    },
+    ruby: {
+        border: "border-primary/20",
+        iconBg: "bg-primary/10",
+        iconColor: "text-primary",
+        valueColor: "text-primary",
+    },
+} as const;
+
+/**
+ * A single premium stat card with icon, value, and description.
+ */
+function StatCardComponent({ stat }: { stat: StatCard }) {
+    const accentStyle = stat.accent ? ACCENT_STYLES[stat.accent] : null;
+
+    return (
+        <Card
+            className={cn(
+                "card-premium group",
+                accentStyle?.border,
+            )}
+        >
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
+                <CardTitle className="text-xs font-medium tracking-wide text-muted-foreground">
+                    {stat.title}
+                </CardTitle>
+                <span
+                    className={cn(
+                        "flex size-9 items-center justify-center rounded-lg transition-colors",
+                        accentStyle?.iconBg ?? "bg-muted/60",
+                    )}
+                >
+                    <stat.icon
+                        className={cn(
+                            "size-4",
+                            accentStyle?.iconColor ?? "text-muted-foreground",
+                        )}
+                    />
+                </span>
+            </CardHeader>
+            <CardContent>
+                <p
+                    className={cn(
+                        "text-2xl font-bold tracking-tight",
+                        accentStyle?.valueColor,
+                    )}
+                >
+                    {stat.value}
+                </p>
+                <p className="mt-1 text-xs text-muted-foreground">
+                    {stat.description}
+                </p>
+            </CardContent>
+        </Card>
+    );
+}
+
 /**
  * Prominent CTA shown when GitHub App is not connected.
  *
@@ -181,16 +259,21 @@ function buildStats(overview: OverviewData): StatCard[] {
  */
 function ConnectGithubBanner() {
     return (
-        <Card className="border-blue-500/25 bg-blue-500/5">
+        <Card className="card-premium border-blue-500/20 bg-gradient-to-r from-blue-500/5 via-transparent to-primary/5">
             <CardHeader className="flex flex-row items-start justify-between gap-4">
-                <div>
-                    <CardTitle className="text-sm">
-                        Connect GitHub to get started
-                    </CardTitle>
-                    <CardDescription>
-                        Install the GitHub App to list repositories and enable
-                        AI reviews on pull requests.
-                    </CardDescription>
+                <div className="flex items-start gap-3">
+                    <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-blue-500/10">
+                        <ZapIcon className="size-5 text-blue-500" />
+                    </span>
+                    <div>
+                        <CardTitle className="text-sm">
+                            Connect GitHub to get started
+                        </CardTitle>
+                        <CardDescription className="mt-1">
+                            Install the GitHub App to list repositories and enable
+                            AI reviews on pull requests.
+                        </CardDescription>
+                    </div>
                 </div>
                 <Button
                     nativeButton={false}
@@ -198,6 +281,7 @@ function ConnectGithubBanner() {
                     className="shrink-0"
                 >
                     Connect GitHub
+                    <ArrowRightIcon className="size-4" />
                 </Button>
             </CardHeader>
         </Card>
@@ -213,38 +297,53 @@ function ConnectGithubBanner() {
 function ActivityList({ items }: { items: OverviewActivityItem[] }) {
     if (items.length === 0) {
         return (
-            <p className="text-sm text-muted-foreground">
-                No reviews yet. Once AI PR reviews are enabled, summaries will
-                appear here.
-            </p>
+            <div className="flex flex-col items-center justify-center gap-3 py-12 text-center">
+                <span className="flex size-12 items-center justify-center rounded-xl bg-muted/60">
+                    <ActivityIcon className="size-6 text-muted-foreground/60" />
+                </span>
+                <div>
+                    <p className="text-sm font-medium text-muted-foreground">
+                        No reviews yet
+                    </p>
+                    <p className="mt-1 max-w-xs text-xs text-muted-foreground/70">
+                        Once AI PR reviews are enabled on a connected repository,
+                        review summaries will appear here.
+                    </p>
+                </div>
+            </div>
         );
     }
 
     return (
-        <div className="space-y-4">
+        <div className="space-y-1">
             {items.map((item) => {
                 const config = ACTIVITY_STATUS[item.status];
 
                 return (
                     <div
                         key={item.id}
-                        className="flex flex-wrap items-center justify-between gap-2 border-b border-border pb-4 last:border-0 last:pb-0"
+                        className="flex flex-wrap items-center justify-between gap-2 rounded-lg px-3 py-3 transition-colors hover:bg-muted/40"
                     >
-                        <div>
-                            <p className="text-xs font-medium">
-                                {item.repoFullName}{" "}
-                                <span className="text-muted-foreground">
-                                    {item.prNumber}
-                                </span>
-                            </p>
-                            <p className="text-xs text-muted-foreground">
-                                {formatDistanceToNow(
-                                    new Date(item.reviewedAt),
-                                    {
-                                        addSuffix: true,
-                                    },
-                                )}
-                            </p>
+                        <div className="flex items-center gap-3">
+                            <span className="flex size-8 items-center justify-center rounded-lg bg-primary/8">
+                                <GitPullRequestIcon className="size-3.5 text-primary/70" />
+                            </span>
+                            <div>
+                                <p className="text-sm font-medium">
+                                    {item.repoFullName}{" "}
+                                    <span className="text-muted-foreground">
+                                        {item.prNumber}
+                                    </span>
+                                </p>
+                                <p className="text-xs text-muted-foreground">
+                                    {formatDistanceToNow(
+                                        new Date(item.reviewedAt),
+                                        {
+                                            addSuffix: true,
+                                        },
+                                    )}
+                                </p>
+                            </div>
                         </div>
                         <span className={statusBadge(config.tone)}>
                             {config.label}
@@ -271,64 +370,45 @@ export function OverviewContent({ overview }: OverviewContentProps) {
     const showConnectBanner = !overview.installation.connected;
 
     return (
-        <div className="flex flex-1 flex-col gap-6 p-6">
-            <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-                {stats.map((stat) => (
-                    <Card
+        <div className="flex flex-1 flex-col gap-8 p-6 lg:p-8">
+            {/* Stat cards */}
+            <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
+                {stats.map((stat, i) => (
+                    <div
                         key={stat.title}
-                        className={cn(
-                            stat.accent === "success" && "border-green-500/25",
-                            stat.accent === "info" && "border-blue-500/25",
-                        )}
+                        className={cn("animate-slide-up", `delay-${i + 1}`)}
                     >
-                        <CardHeader className="flex flex-row items-center justify-between pb-2">
-                            <CardTitle className="text-xs font-medium text-muted-foreground">
-                                {stat.title}
-                            </CardTitle>
-                            <stat.icon
-                                className={cn(
-                                    "size-4",
-                                    stat.accent === "success" &&
-                                        "text-green-600 dark:text-green-400",
-                                    stat.accent === "info" &&
-                                        "text-blue-600 dark:text-blue-400",
-                                    !stat.accent && "text-muted-foreground",
-                                )}
-                            />
-                        </CardHeader>
-                        <CardContent>
-                            <p
-                                className={cn(
-                                    "text-2xl font-semibold tracking-tight",
-                                    stat.accent === "success" &&
-                                        "text-green-700 dark:text-green-400",
-                                    stat.accent === "info" &&
-                                        "text-blue-700 dark:text-blue-400",
-                                )}
-                            >
-                                {stat.value}
-                            </p>
-                            <p className="text-xs text-muted-foreground">
-                                {stat.description}
-                            </p>
-                        </CardContent>
-                    </Card>
+                        <StatCardComponent stat={stat} />
+                    </div>
                 ))}
             </div>
 
-            {showConnectBanner ? <ConnectGithubBanner /> : null}
+            {/* GitHub connect banner */}
+            {showConnectBanner ? (
+                <div className="animate-slide-up delay-5">
+                    <ConnectGithubBanner />
+                </div>
+            ) : null}
 
-            <Card>
-                <CardHeader>
-                    <CardTitle>Recent activity</CardTitle>
-                    <CardDescription>
-                        Latest AI review summaries from your repositories.
-                    </CardDescription>
-                </CardHeader>
-                <CardContent>
-                    <ActivityList items={overview.recentActivity} />
-                </CardContent>
-            </Card>
+            {/* Recent activity */}
+            <div className="animate-slide-up delay-6">
+                <Card className="card-premium">
+                    <CardHeader>
+                        <div className="flex items-center gap-2">
+                            <ActivityIcon className="size-4 text-muted-foreground" />
+                            <CardTitle className="text-sm font-semibold">
+                                Recent activity
+                            </CardTitle>
+                        </div>
+                        <CardDescription>
+                            Latest AI review summaries from your repositories.
+                        </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        <ActivityList items={overview.recentActivity} />
+                    </CardContent>
+                </Card>
+            </div>
         </div>
     );
 }

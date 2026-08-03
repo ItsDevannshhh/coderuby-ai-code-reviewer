@@ -3,22 +3,25 @@ import { cn } from "@/lib/utils";
 /** Background, border, and text colors for inline status badges. */
 export const statusBadgeClass = {
     success:
-        "border-green-500/40 bg-green-500/15 text-green-700 dark:text-green-400",
+        "border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:border-emerald-400/25 dark:bg-emerald-400/10 dark:text-emerald-400",
     warning:
-        "border-amber-500/40 bg-amber-500/15 text-amber-700 dark:text-amber-400",
-    danger: "border-red-500/40 bg-red-500/15 text-red-700 dark:text-red-400",
-    info: "border-blue-500/40 bg-blue-500/15 text-blue-700 dark:text-blue-400",
-    neutral: "border-border bg-muted text-muted-foreground",
+        "border-amber-500/30 bg-amber-500/10 text-amber-700 dark:border-amber-400/25 dark:bg-amber-400/10 dark:text-amber-400",
+    danger:
+        "border-red-500/30 bg-red-500/10 text-red-700 dark:border-red-400/25 dark:bg-red-400/10 dark:text-red-400",
+    info:
+        "border-blue-500/30 bg-blue-500/10 text-blue-700 dark:border-blue-400/25 dark:bg-blue-400/10 dark:text-blue-400",
+    neutral:
+        "border-border bg-muted/60 text-muted-foreground",
 } as const;
 
 /** Button variants for primary actions like "Install" or "Disconnect". */
 export const statusButtonClass = {
     success:
-        "bg-green-600 text-white hover:bg-green-700 focus-visible:ring-green-500/50 dark:bg-green-600 dark:hover:bg-green-500",
+        "bg-emerald-600 text-white hover:bg-emerald-500 focus-visible:ring-emerald-500/50 dark:bg-emerald-600 dark:hover:bg-emerald-500",
     danger:
-        "border-red-500/50 bg-red-500/10 text-red-700 hover:bg-red-500/20 dark:text-red-400 dark:hover:bg-red-500/20",
+        "border-red-500/40 bg-red-500/10 text-red-700 hover:bg-red-500/15 dark:text-red-400 dark:hover:bg-red-500/15",
     warning:
-        "border-amber-500/50 bg-amber-500/10 text-amber-800 hover:bg-amber-500/20 dark:text-amber-400",
+        "border-amber-500/40 bg-amber-500/10 text-amber-800 hover:bg-amber-500/15 dark:text-amber-400",
 } as const;
 
 /**
@@ -33,7 +36,7 @@ export function statusBadge(
     className?: string
 ) {
     return cn(
-        "inline-flex items-center rounded-none border px-2 py-0.5 text-xs font-medium capitalize",
+        "inline-flex items-center rounded-full border px-2.5 py-0.5 text-[11px] font-medium capitalize tracking-wide",
         statusBadgeClass[tone],
         className
     );

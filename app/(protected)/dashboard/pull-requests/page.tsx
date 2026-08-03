@@ -7,6 +7,7 @@
 
 import type { Metadata } from "next";
 import Link from "next/link";
+import { GitPullRequestIcon, ArrowRightIcon } from "lucide-react";
 
 import { DashboardHeader } from "@/features/dashboard/components/dashboard-header";
 import { DASHBOARD_ROUTES } from "@/features/dashboard/lib/routes";
@@ -27,15 +28,25 @@ export const metadata: Metadata = {
  */
 function PullRequestsNotConnected() {
     return (
-        <div className="flex flex-1 flex-col items-center justify-center gap-4 p-6">
-            <p className="text-sm text-muted-foreground">
-                Install the GitHub App first to see AI-reviewed pull requests.
-            </p>
+        <div className="flex flex-1 flex-col items-center justify-center gap-5 p-6">
+            <span className="flex size-16 items-center justify-center rounded-2xl bg-muted/60">
+                <GitPullRequestIcon className="size-8 text-muted-foreground/50" />
+            </span>
+            <div className="text-center">
+                <p className="text-base font-medium">
+                    No pull requests available
+                </p>
+                <p className="mt-1.5 max-w-sm text-sm text-muted-foreground">
+                    Install the GitHub App first to see AI-reviewed pull requests
+                    from your repositories.
+                </p>
+            </div>
             <Button
                 nativeButton={false}
                 render={<Link href={DASHBOARD_ROUTES.github} />}
             >
-                Go to GitHub App
+                Connect GitHub App
+                <ArrowRightIcon className="size-4" />
             </Button>
         </div>
     );

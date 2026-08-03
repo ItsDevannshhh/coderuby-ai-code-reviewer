@@ -1,11 +1,13 @@
 "use client";
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { RefreshCwIcon, CheckIcon } from "lucide-react";
 import { githubRepoKeys } from "@/features/github/lib/repos-query";
 import { syncRepoCodebase } from "../actions/repo-sync";
 import { Button } from "@/components/ui/button";
 import { RepoSyncStatus } from "../types";
 import { toast } from "sonner";
+import { cn } from "@/lib/utils";
 
 type SyncRepoButtonProps = {
     repoFullName: string;
@@ -57,14 +59,26 @@ const SyncRepoButton = ({
     });
 
     const syncing = isSyncing(syncStatus, syncRepo.isPending);
+    const isSynced = syncStatus === "synced";
 
     return (
         <Button
             size="sm"
-            variant="outline"
+            variant={isSynced ? "ghost" : "outline"}
             disabled={syncing}
             onClick={() => syncRepo.mutate()}
+            className={cn(
+                "gap-1.5 text-xs",
+                !isSynced && !syncing && "border-primary/30 text-primary hover:bg-primary/10 hover:text-primary",
+            )}
         >
+            {syncing ? (
+                <RefreshCwIcon className="size-3.5 animate-spin" />
+            ) : isSynced ? (
+                <CheckIcon className="size-3.5 text-emerald-500" />
+            ) : (
+                <RefreshCwIcon className="size-3.5" />
+            )}
             {getButtonLabel(syncStatus, syncRepo.isPending)}
         </Button>
     );

@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const navLinks = [
@@ -12,12 +13,12 @@ const navLinks = [
 
 export function SiteNavbar() {
   return (
-    <header className="sticky top-0 z-50 border-b border-border/70 bg-background/80 backdrop-blur-md">
+    <header className="sticky top-0 z-50 border-b border-border/40 bg-background/70 backdrop-blur-xl">
       <nav
         aria-label="Primary"
         className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6 lg:px-8"
       >
-        <Link href="/" className="flex items-center gap-2">
+        <Link href="/" className="flex items-center gap-2.5">
           <span aria-hidden="true" className="flex size-7 items-center justify-center">
             <Image
               src="/logo2.svg"
@@ -35,7 +36,7 @@ export function SiteNavbar() {
             <li key={link.href}>
               <Link
                 href={link.href}
-                className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+                className="relative text-sm font-medium text-muted-foreground transition-colors hover:text-foreground after:absolute after:-bottom-1 after:left-0 after:h-px after:w-0 after:bg-primary after:transition-all after:duration-300 hover:after:w-full"
               >
                 {link.label}
               </Link>
@@ -49,7 +50,7 @@ export function SiteNavbar() {
             render={<Link href="/sign-in" />}
             variant="ghost"
             size="lg"
-            className="hidden sm:inline-flex"
+            className="hidden text-muted-foreground hover:text-foreground sm:inline-flex"
           >
             Login
           </Button>
@@ -57,8 +58,10 @@ export function SiteNavbar() {
             nativeButton={false}
             render={<Link href="/dashboard" />}
             size="lg"
+            className="glow-ruby bg-primary text-primary-foreground hover:bg-primary/90"
           >
             Try CodeRuby
+            <ArrowRight className="size-4" />
           </Button>
         </div>
       </nav>

@@ -8,6 +8,7 @@
 "use client";
 
 import { format } from "date-fns";
+import { CheckIcon, SparklesIcon, UserIcon, CreditCardIcon } from "lucide-react";
 
 import { UpgradeButton } from "@/features/billing/components/upgrade-button";
 
@@ -89,12 +90,19 @@ function ProfileTab({ profile }: { profile: SettingsProfile }) {
     const memberSince = format(new Date(profile.memberSince), "MMMM d, yyyy");
 
     return (
-        <Card>
+        <Card className="card-premium">
             <CardHeader>
-                <CardTitle>Profile</CardTitle>
-                <CardDescription>
-                    Account information from your GitHub sign-in.
-                </CardDescription>
+                <div className="flex items-center gap-2.5">
+                    <span className="flex size-8 items-center justify-center rounded-lg bg-primary/10">
+                        <UserIcon className="size-4 text-primary" />
+                    </span>
+                    <div>
+                        <CardTitle>Profile</CardTitle>
+                        <CardDescription>
+                            Account information from your GitHub sign-in.
+                        </CardDescription>
+                    </div>
+                </div>
             </CardHeader>
             <CardContent className="space-y-6">
                 <div className="flex items-center gap-4">
@@ -108,11 +116,11 @@ function ProfileTab({ profile }: { profile: SettingsProfile }) {
                         <AvatarFallback>{initials}</AvatarFallback>
                     </Avatar>
                     <div>
-                        <p className="font-medium">{displayName}</p>
+                        <p className="text-sm font-semibold">{displayName}</p>
                         <p className="text-xs text-muted-foreground">
                             {profile.email}
                         </p>
-                        <p className="text-xs text-muted-foreground">
+                        <p className="mt-0.5 text-xs text-muted-foreground">
                             Member since {memberSince}
                         </p>
                     </div>
@@ -120,16 +128,26 @@ function ProfileTab({ profile }: { profile: SettingsProfile }) {
                 <Separator />
                 <div className="grid gap-4">
                     <div className="grid gap-2">
-                        <Label htmlFor="name">Display name</Label>
-                        <Input id="name" defaultValue={profile.name} readOnly />
+                        <Label htmlFor="name" className="text-xs text-muted-foreground">
+                            Display name
+                        </Label>
+                        <Input
+                            id="name"
+                            defaultValue={profile.name}
+                            readOnly
+                            className="bg-muted/30"
+                        />
                     </div>
                     <div className="grid gap-2">
-                        <Label htmlFor="email">Email</Label>
+                        <Label htmlFor="email" className="text-xs text-muted-foreground">
+                            Email
+                        </Label>
                         <Input
                             id="email"
                             type="email"
                             defaultValue={profile.email}
                             readOnly
+                            className="bg-muted/30"
                         />
                     </div>
                 </div>
@@ -159,6 +177,32 @@ function getUsageText(usage: UsageSummary): string {
 }
 
 /**
+ * Visual usage progress bar.
+ */
+function UsageBar({ usage }: { usage: UsageSummary }) {
+    if (usage.limit === null) {
+        return null;
+    }
+
+    const percentage = Math.min(100, (usage.used / usage.limit) * 100);
+
+    return (
+        <div className="space-y-1.5">
+            <div className="flex items-center justify-between text-xs text-muted-foreground">
+                <span>{getUsageText(usage)}</span>
+                <span>{Math.round(percentage)}%</span>
+            </div>
+            <div className="h-2 overflow-hidden rounded-full bg-muted/60">
+                <div
+                    className="h-full rounded-full bg-primary transition-all duration-500"
+                    style={{ width: `${percentage}%` }}
+                />
+            </div>
+        </div>
+    );
+}
+
+/**
  * Subscription tab — plan card, usage, feature list, billing actions.
  *
  * @param subscription - Current plan and billing status.
@@ -180,15 +224,15 @@ function SubscriptionTab({
         subscription.status === "active" || subscription.status === "trialing";
 
     // Visual styling reflects active vs inactive subscription
-    let cardBorderClass = "border-border";
+    let planCardBorderClass = "border-border";
     let planTextClass = "text-foreground";
     let statusTextClass = "text-muted-foreground";
     let badgeTone: "success" | "neutral" | "warning" = "neutral";
 
     if (isActive) {
-        cardBorderClass = "border-green-500/25";
-        planTextClass = "text-green-800 dark:text-green-300";
-        statusTextClass = "text-green-700 dark:text-green-400";
+        planCardBorderClass = "border-emerald-500/20";
+        planTextClass = "text-emerald-800 dark:text-emerald-300";
+        statusTextClass = "text-emerald-700 dark:text-emerald-400";
         badgeTone = "success";
     }
 
@@ -197,24 +241,32 @@ function SubscriptionTab({
     }
 
     return (
-        <Card className={cardBorderClass}>
+        <Card className="card-premium">
             <CardHeader>
-                <CardTitle>Subscription</CardTitle>
-                <CardDescription>
-                    Manage your plan and billing for AI code reviews.
-                </CardDescription>
+                <div className="flex items-center gap-2.5">
+                    <span className="flex size-8 items-center justify-center rounded-lg bg-primary/10">
+                        <CreditCardIcon className="size-4 text-primary" />
+                    </span>
+                    <div>
+                        <CardTitle>Subscription</CardTitle>
+                        <CardDescription>
+                            Manage your plan and billing for AI code reviews.
+                        </CardDescription>
+                    </div>
+                </div>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-5">
+                {/* Plan summary */}
                 <div
                     className={cn(
-                        "flex flex-wrap items-center justify-between gap-4 rounded-none border p-4",
+                        "flex flex-wrap items-center justify-between gap-4 rounded-xl border p-4",
                         isActive
-                            ? "border-green-500/30 bg-green-500/5"
-                            : "border-border bg-muted/30",
+                            ? "border-emerald-500/20 bg-emerald-500/5"
+                            : "border-border bg-muted/20",
                     )}
                 >
                     <div>
-                        <p className={cn("font-medium", planTextClass)}>
+                        <p className={cn("font-semibold", planTextClass)}>
                             {planDetails.label} plan
                         </p>
                         <p className="text-xs text-muted-foreground">
@@ -233,12 +285,29 @@ function SubscriptionTab({
                         {planDetails.label}
                     </span>
                 </div>
-                <p className="text-xs text-muted-foreground">
-                    {getUsageText(usage)}
-                </p>
-                <ul className="space-y-2 text-xs text-muted-foreground">
+
+                {/* Usage bar */}
+                <UsageBar usage={usage} />
+
+                {/* Free plan text fallback */}
+                {usage.limit === null ? (
+                    <p className="text-xs text-muted-foreground">
+                        {getUsageText(usage)}
+                    </p>
+                ) : null}
+
+                {/* Feature list */}
+                <ul className="space-y-2.5">
                     {planDetails.features.map((feature) => (
-                        <li key={feature}>{feature}</li>
+                        <li
+                            key={feature}
+                            className="flex items-center gap-2.5 text-xs text-muted-foreground"
+                        >
+                            <span className="flex size-5 items-center justify-center rounded-md bg-primary/10">
+                                <CheckIcon className="size-3 text-primary" />
+                            </span>
+                            {feature}
+                        </li>
                     ))}
                 </ul>
             </CardContent>
@@ -268,7 +337,7 @@ export function SettingsContent({
     usage,
 }: SettingsContentProps) {
     return (
-        <div className="flex flex-1 flex-col p-6">
+        <div className="flex flex-1 flex-col p-6 lg:p-8">
             <Tabs defaultValue="profile" className="w-full max-w-2xl">
                 <TabsList>
                     <TabsTrigger value="profile">Profile</TabsTrigger>

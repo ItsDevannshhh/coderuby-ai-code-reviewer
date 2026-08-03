@@ -16,6 +16,8 @@ import {
     GitBranchIcon,
     GitPullRequestIcon,
     UserIcon,
+    SparklesIcon,
+    ClockIcon,
 } from "lucide-react";
 
 import { DashboardHeader } from "@/features/dashboard/components/dashboard-header";
@@ -53,19 +55,50 @@ function ReviewBody({
 }) {
     if (status === "rate_limited") {
         return (
-            <p className="text-sm text-muted-foreground">
-                Monthly review limit reached. Upgrade to Pro for unlimited
-                reviews, or wait until next month when your limit resets.
-            </p>
+            <div className="flex flex-col items-center gap-4 py-10 text-center">
+                <span className="flex size-12 items-center justify-center rounded-xl bg-amber-500/10">
+                    <SparklesIcon className="size-6 text-amber-500" />
+                </span>
+                <div>
+                    <p className="text-sm font-medium">
+                        Monthly review limit reached
+                    </p>
+                    <p className="mt-1 max-w-sm text-xs text-muted-foreground">
+                        Upgrade to Pro for unlimited reviews, or wait until next
+                        month when your limit resets.
+                    </p>
+                </div>
+                <Button
+                    nativeButton={false}
+                    render={<Link href={DASHBOARD_ROUTES.settings} />}
+                    size="sm"
+                >
+                    Upgrade to Pro
+                </Button>
+            </div>
         );
     }
 
     if (!review) {
         return (
-            <p className="text-sm text-muted-foreground">
-                The AI review is not ready yet. It will appear here once the
-                reviewer finishes.
-            </p>
+            <div className="flex flex-col items-center gap-4 py-10 text-center">
+                <span className="flex size-12 items-center justify-center rounded-xl bg-muted/60">
+                    <ClockIcon className="size-6 text-muted-foreground/50" />
+                </span>
+                <div>
+                    <p className="text-sm font-medium">
+                        Review in progress
+                    </p>
+                    <p className="mt-1 max-w-sm text-xs text-muted-foreground">
+                        The AI review is not ready yet. It will appear here once the
+                        reviewer finishes processing.
+                    </p>
+                </div>
+                {/* Skeleton progress indicator */}
+                <div className="flex items-center gap-2">
+                    <div className="skeleton-premium h-2 w-32 rounded-full" />
+                </div>
+            </div>
         );
     }
 
@@ -110,24 +143,31 @@ export default async function PullRequestDetailPage({
                 description={pullRequest.repoFullName}
             />
 
-            <div className="flex flex-col gap-4 p-6">
+            <div className="flex flex-col gap-5 p-6 lg:p-8">
+                {/* Back navigation */}
                 <div>
                     <Button
                         variant="ghost"
                         size="sm"
                         nativeButton={false}
                         render={<Link href={DASHBOARD_ROUTES.pullRequest} />}
+                        className="text-muted-foreground hover:text-foreground"
                     >
-                        <ArrowLeftIcon />
+                        <ArrowLeftIcon className="size-4" />
                         Back to pull requests
                     </Button>
                 </div>
 
-                <Card className="rounded-none">
+                {/* PR metadata card */}
+                <Card className="card-premium">
                     <CardHeader>
-                        <CardTitle className="flex flex-wrap items-center gap-2 text-sm">
-                            <GitPullRequestIcon className="size-4 text-muted-foreground" />
-                            {pullRequest.title}
+                        <CardTitle className="flex flex-wrap items-center gap-2.5 text-sm">
+                            <span className="flex size-8 items-center justify-center rounded-lg bg-primary/10">
+                                <GitPullRequestIcon className="size-4 text-primary" />
+                            </span>
+                            <span className="font-semibold">
+                                {pullRequest.title}
+                            </span>
                             <span className="text-xs font-normal text-muted-foreground">
                                 #{pullRequest.prNumber}
                             </span>
@@ -141,20 +181,22 @@ export default async function PullRequestDetailPage({
                             </span>
                         </CardTitle>
                     </CardHeader>
-                    <CardContent className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
-                        <span className="inline-flex items-center gap-1">
-                            <UserIcon className="size-3" />
+                    <CardContent className="flex flex-wrap items-center gap-x-5 gap-y-2 text-xs text-muted-foreground">
+                        <span className="inline-flex items-center gap-1.5">
+                            <UserIcon className="size-3.5" />
                             {pullRequest.authorLogin ?? "unknown"}
                         </span>
-                        <span className="inline-flex items-center gap-1">
-                            <GitBranchIcon className="size-3" />
-                            {pullRequest.baseBranch}
+                        <span className="inline-flex items-center gap-1.5">
+                            <GitBranchIcon className="size-3.5" />
+                            <code className="rounded bg-muted/60 px-1.5 py-0.5 text-[11px]">
+                                {pullRequest.baseBranch}
+                            </code>
                         </span>
                         <span>opened {openedAgo}</span>
                         <Link
                             href={prUrl}
                             target="_blank"
-                            className="ml-auto inline-flex items-center gap-1 hover:text-foreground hover:underline"
+                            className="ml-auto inline-flex items-center gap-1.5 transition-colors hover:text-primary"
                         >
                             View on GitHub
                             <ExternalLinkIcon className="size-3" />
@@ -162,11 +204,14 @@ export default async function PullRequestDetailPage({
                     </CardContent>
                 </Card>
 
-                <Card className="rounded-none">
+                {/* AI Review card */}
+                <Card className="card-premium">
                     <CardHeader>
-                        <CardTitle className="flex items-center gap-2 text-sm">
-                            <BotIcon className="size-4 text-muted-foreground" />
-                            AI Review
+                        <CardTitle className="flex items-center gap-2.5 text-sm">
+                            <span className="flex size-8 items-center justify-center rounded-lg bg-primary/10">
+                                <BotIcon className="size-4 text-primary" />
+                            </span>
+                            <span className="font-semibold">AI Review</span>
                         </CardTitle>
                     </CardHeader>
                     <CardContent>

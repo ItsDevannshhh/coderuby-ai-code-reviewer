@@ -3,6 +3,12 @@
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { formatDistanceToNow } from "date-fns";
 import { useEffect, useMemo, useRef, useState } from "react";
+import {
+    SearchIcon,
+    FolderGit2Icon,
+    GitBranchIcon,
+    CodeIcon,
+} from "lucide-react";
 import { Input } from "@/components/ui/input";
 import {
     Table,
@@ -20,6 +26,61 @@ import { LockIcon, LockKeyOpenIcon, StarIcon } from "@phosphor-icons/react";
 import SyncRepoButton from "@/features/repo-sync/components/sync-repo-button";
 
 type Filter = "all" | "public" | "private";
+
+/** Premium skeleton row for loading state */
+function SkeletonRow() {
+    return (
+        <TableRow>
+            <TableCell>
+                <div className="flex flex-col gap-2">
+                    <div className="skeleton-premium h-4 w-36" />
+                    <div className="skeleton-premium h-3 w-48" />
+                </div>
+            </TableCell>
+            <TableCell>
+                <div className="skeleton-premium h-5 w-16 rounded-full" />
+            </TableCell>
+            <TableCell>
+                <div className="skeleton-premium h-4 w-14" />
+            </TableCell>
+            <TableCell>
+                <div className="skeleton-premium h-4 w-20" />
+            </TableCell>
+            <TableCell className="text-right">
+                <div className="skeleton-premium ml-auto h-4 w-8" />
+            </TableCell>
+            <TableCell className="text-right">
+                <div className="skeleton-premium ml-auto h-4 w-20" />
+            </TableCell>
+            <TableCell className="text-right">
+                <div className="skeleton-premium ml-auto h-8 w-16 rounded-lg" />
+            </TableCell>
+        </TableRow>
+    );
+}
+
+/** Empty state for no repositories */
+function EmptyRepoState({ hasSearch }: { hasSearch: boolean }) {
+    return (
+        <div className="flex flex-col items-center justify-center gap-4 py-16 text-center">
+            <span className="flex size-14 items-center justify-center rounded-2xl bg-muted/60">
+                <FolderGit2Icon className="size-7 text-muted-foreground/50" />
+            </span>
+            <div>
+                <p className="text-sm font-medium">
+                    {hasSearch
+                        ? "No matching repositories"
+                        : "No repositories found"}
+                </p>
+                <p className="mt-1 max-w-sm text-xs text-muted-foreground">
+                    {hasSearch
+                        ? "Try adjusting your search query or filter."
+                        : "Repositories from your GitHub App installation will appear here."}
+                </p>
+            </div>
+        </div>
+    );
+}
 
 export function RepoList() {
     const [filter, setFilter] = useState<Filter>("all");
@@ -104,49 +165,53 @@ export function RepoList() {
         footer = `All ${repos.length} repositories loaded`;
     }
 
-    let rows;
+    let tableContent;
 
     if (loading) {
-        rows = (
-            <TableRow>
-                <TableCell
-                    colSpan={7}
-                    className="text-center text-muted-foreground"
-                >
-                    Loading repositories…
-                </TableCell>
-            </TableRow>
+        tableContent = (
+            <>
+                <SkeletonRow />
+                <SkeletonRow />
+                <SkeletonRow />
+                <SkeletonRow />
+                <SkeletonRow />
+            </>
         );
     } else if (isError) {
-        rows = (
+        tableContent = (
             <TableRow>
                 <TableCell
                     colSpan={7}
-                    className="text-center text-muted-foreground"
+                    className="h-32 text-center"
                 >
-                    Failed to load repositories.
+                    <div className="flex flex-col items-center gap-2">
+                        <p className="text-sm font-medium text-destructive">
+                            Failed to load repositories
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                            Please check your connection and try again.
+                        </p>
+                    </div>
                 </TableCell>
             </TableRow>
         );
     } else if (visibleRepos.length === 0) {
-        rows = (
+        tableContent = (
             <TableRow>
-                <TableCell
-                    colSpan={7}
-                    className="text-center text-muted-foreground"
-                >
-                    No repositories found.
+                <TableCell colSpan={7} className="border-0">
+                    <EmptyRepoState hasSearch={search.length > 0 || filter !== "all"} />
                 </TableCell>
             </TableRow>
         );
     } else {
-        rows = visibleRepos.map((repo) => (
+        tableContent = visibleRepos.map((repo) => (
             <RepoRow key={repo.id} repo={repo} />
         ));
     }
 
     return (
-        <div className="flex flex-1 flex-col gap-4 p-6">
+        <div className="flex flex-1 flex-col gap-5 p-6 lg:p-8">
+            {/* Toolbar */}
             <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <Tabs
                     value={filter}
@@ -164,38 +229,43 @@ export function RepoList() {
                         </TabsTrigger>
                     </TabsList>
                 </Tabs>
-                <Input
-                    placeholder="Search repositories…"
-                    className="max-w-xs"
-                    value={search}
-                    onChange={(event) => setSearch(event.target.value)}
-                />
+                <div className="relative max-w-xs">
+                    <SearchIcon className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+                    <Input
+                        placeholder="Search repositories…"
+                        className="pl-9"
+                        value={search}
+                        onChange={(event) => setSearch(event.target.value)}
+                    />
+                </div>
             </div>
 
-            <div className="rounded-none border border-border">
+            {/* Table */}
+            <div className="overflow-hidden rounded-xl border border-border bg-card">
                 <Table>
                     <TableHeader>
-                        <TableRow>
-                            <TableHead>Repository</TableHead>
-                            <TableHead>Visibility</TableHead>
-                            <TableHead>Branch</TableHead>
-                            <TableHead>Language</TableHead>
-                            <TableHead className="text-right">Stars</TableHead>
-                            <TableHead className="text-right">
+                        <TableRow className="border-border/60 bg-muted/30 hover:bg-muted/30">
+                            <TableHead className="font-medium">Repository</TableHead>
+                            <TableHead className="font-medium">Visibility</TableHead>
+                            <TableHead className="font-medium">Branch</TableHead>
+                            <TableHead className="font-medium">Language</TableHead>
+                            <TableHead className="text-right font-medium">Stars</TableHead>
+                            <TableHead className="text-right font-medium">
                                 Updated
                             </TableHead>
-                            <TableHead className="text-right">
+                            <TableHead className="text-right font-medium">
                                 Codebase
                             </TableHead>
                         </TableRow>
                     </TableHeader>
-                    <TableBody>{rows}</TableBody>
+                    <TableBody>{tableContent}</TableBody>
                 </Table>
             </div>
 
+            {/* Footer */}
             <div
                 ref={loadMoreRef}
-                className="py-2 text-center text-sm text-muted-foreground"
+                className="py-2 text-center text-xs text-muted-foreground"
             >
                 {footer}
             </div>
@@ -207,13 +277,18 @@ function RepoRow({ repo }: { repo: DashboardRepo }) {
     const tone = repo.visibility === "public" ? "info" : "warning";
 
     return (
-        <TableRow>
+        <TableRow className="table-row-hover border-border/40">
             <TableCell>
-                <div className="flex flex-col">
-                    <span className="font-medium">{repo.name}</span>
-                    <span className="text-xs text-muted-foreground">
-                        {repo.fullName}
+                <div className="flex items-center gap-3">
+                    <span className="flex size-8 items-center justify-center rounded-lg bg-muted/50">
+                        <CodeIcon className="size-4 text-muted-foreground" />
                     </span>
+                    <div className="flex flex-col">
+                        <span className="text-sm font-medium">{repo.name}</span>
+                        <span className="text-xs text-muted-foreground">
+                            {repo.fullName}
+                        </span>
+                    </div>
                 </div>
             </TableCell>
             <TableCell>
@@ -226,17 +301,22 @@ function RepoRow({ repo }: { repo: DashboardRepo }) {
                     {repo.visibility}
                 </span>
             </TableCell>
-            <TableCell className="text-muted-foreground">
-                {repo.defaultBranch}
+            <TableCell>
+                <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
+                    <GitBranchIcon className="size-3" />
+                    {repo.defaultBranch}
+                </span>
             </TableCell>
-            <TableCell>{repo.language ?? "—"}</TableCell>
+            <TableCell>
+                <span className="text-sm">{repo.language ?? "—"}</span>
+            </TableCell>
             <TableCell className="text-right">
-                <span className="inline-flex items-center justify-end gap-1 text-muted-foreground">
-                    <StarIcon className="size-3 text-amber-500" />
+                <span className="inline-flex items-center justify-end gap-1 text-sm text-muted-foreground">
+                    <StarIcon className="size-3.5 text-amber-500" weight="fill" />
                     {repo.stars}
                 </span>
             </TableCell>
-            <TableCell className="text-right text-muted-foreground">
+            <TableCell className="text-right text-xs text-muted-foreground">
                 {formatDistanceToNow(new Date(repo.updatedAt), {
                     addSuffix: true,
                 })}

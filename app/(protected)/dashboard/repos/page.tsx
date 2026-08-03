@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { FolderGit2Icon, ArrowRightIcon } from "lucide-react";
 
 import { DashboardHeader } from "@/features/dashboard/components/dashboard-header";
 
@@ -16,15 +17,25 @@ export const metadata: Metadata = {
 
 function ReposNotConnected() {
     return (
-        <div className="flex flex-1 flex-col items-center justify-center gap-4 p-6">
-            <p className="text-sm text-muted-foreground">
-                Install the GitHub App first to see your repositories.
-            </p>
+        <div className="flex flex-1 flex-col items-center justify-center gap-5 p-6">
+            <span className="flex size-16 items-center justify-center rounded-2xl bg-muted/60">
+                <FolderGit2Icon className="size-8 text-muted-foreground/50" />
+            </span>
+            <div className="text-center">
+                <p className="text-base font-medium">
+                    No repositories available
+                </p>
+                <p className="mt-1.5 max-w-sm text-sm text-muted-foreground">
+                    Install the GitHub App first to connect your repositories
+                    and start reviewing pull requests with AI.
+                </p>
+            </div>
             <Button
                 nativeButton={false}
                 render={<Link href={DASHBOARD_ROUTES.github} />}
             >
-                Go to GitHub App
+                Connect GitHub App
+                <ArrowRightIcon className="size-4" />
             </Button>
         </div>
     );

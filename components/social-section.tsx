@@ -37,14 +37,14 @@ const socials = [
 
 export function SocialSection() {
   return (
-    <section id="social" className="scroll-mt-16 border-t border-border bg-secondary/50">
-      <div className="mx-auto max-w-4xl px-4 py-20 sm:px-6 lg:px-8">
+    <section id="social" className="scroll-mt-16 border-t border-border/40 bg-surface-1">
+      <div className="mx-auto max-w-4xl px-4 py-24 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-2xl text-center">
-          <p className="text-sm font-semibold tracking-wide text-primary uppercase">
+          <p className="text-sm font-semibold tracking-widest text-primary uppercase">
             Social
           </p>
           <h2 className="mt-3 text-balance font-serif text-4xl font-light tracking-tight sm:text-5xl">
-            Built by Devansh
+            Built by <span className="text-gradient-ruby">Devansh</span>
           </h2>
           <p className="mt-4 text-pretty text-lg leading-relaxed text-muted-foreground">
             CodeRuby is an independent project. Follow along, reach out, or check
@@ -52,16 +52,16 @@ export function SocialSection() {
           </p>
         </div>
 
-        <div className="mt-12 flex flex-wrap items-center justify-center gap-4">
+        <div className="mt-14 flex flex-wrap items-center justify-center gap-4">
           {socials.map((social) => (
             <Link
               key={social.label}
               href={social.href}
               target="_blank"
               rel="noopener noreferrer"
-              className="group flex items-center gap-2.5 rounded-xl border border-border bg-card px-5 py-3 text-sm font-medium transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-md hover:shadow-primary/5"
+              className="card-premium group flex items-center gap-2.5 rounded-xl px-5 py-3.5 text-sm font-medium"
             >
-              <social.icon className="size-5 text-muted-foreground transition-colors group-hover:text-primary" />
+              <social.icon className="size-5 text-muted-foreground transition-colors duration-200 group-hover:text-primary" />
               {social.label}
             </Link>
           ))}

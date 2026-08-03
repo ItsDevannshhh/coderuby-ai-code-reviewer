@@ -4,6 +4,8 @@ import {
     ArrowSquareOut,
     GithubLogo,
     Plugs,
+    CheckCircle,
+    PlugsConnected,
 } from "@phosphor-icons/react";
 
 import type { GithubInstallationStatus } from "@/features/dashboard/lib/types";
@@ -35,23 +37,45 @@ type GithubConnectCardProps = {
 
 function ConnectedDetails({ accountLogin }: { accountLogin: string | null }) {
     return (
-        <p className="text-xs text-muted-foreground">
-            Installed for{" "}
-            <span className="font-medium text-green-700 dark:text-green-400">
-                @{accountLogin}
-            </span>
-            . The app can read repository metadata and post review comments on pull
-            requests.
-        </p>
+        <div className="space-y-3">
+            <div className="flex items-center gap-2 rounded-lg border border-emerald-500/20 bg-emerald-500/5 px-3 py-2.5">
+                <CheckCircle className="size-4 text-emerald-500" weight="fill" />
+                <p className="text-xs text-emerald-700 dark:text-emerald-400">
+                    Installed for{" "}
+                    <span className="font-semibold">
+                        @{accountLogin}
+                    </span>
+                </p>
+            </div>
+            <p className="text-xs text-muted-foreground">
+                The app can read repository metadata and post review comments on pull
+                requests.
+            </p>
+        </div>
     );
 }
 
 function DisconnectedDetails() {
     return (
-        <ul className="list-inside list-disc space-y-1 text-xs text-muted-foreground">
-            <li>Access public and private repositories you select</li>
-            <li>Receive webhooks for pull request events</li>
-            <li>Post AI-generated review comments on PRs</li>
+        <ul className="space-y-2.5 text-xs text-muted-foreground">
+            <li className="flex items-center gap-2">
+                <span className="flex size-5 items-center justify-center rounded bg-muted/60">
+                    <span className="size-1.5 rounded-full bg-primary/60" />
+                </span>
+                Access public and private repositories you select
+            </li>
+            <li className="flex items-center gap-2">
+                <span className="flex size-5 items-center justify-center rounded bg-muted/60">
+                    <span className="size-1.5 rounded-full bg-primary/60" />
+                </span>
+                Receive webhooks for pull request events
+            </li>
+            <li className="flex items-center gap-2">
+                <span className="flex size-5 items-center justify-center rounded bg-muted/60">
+                    <span className="size-1.5 rounded-full bg-primary/60" />
+                </span>
+                Post AI-generated review comments on PRs
+            </li>
         </ul>
     );
 }
@@ -78,7 +102,7 @@ function DisconnectedActions({ installUrl }: { installUrl: string }) {
             render={<a href={installUrl} />}
             className={statusButtonClass.success}
         >
-            <GithubLogo />
+            <GithubLogo weight="bold" />
             Install GitHub App
             <ArrowSquareOut className="size-3 opacity-80" />
         </Button>
@@ -125,36 +149,40 @@ export function GithubConnectCard({
     const installUrl = getGithubInstallUrl(userId);
 
     // Default to neutral styling; switch to green when connected
-    let cardBorderClass = "border-border";
-    let iconWrapperClass = "border-border bg-muted";
+    let cardBorderClass = "";
+    let iconWrapperClass = "bg-muted/60 text-muted-foreground";
     let statusTone: "success" | "neutral" = "neutral";
     let statusLabel = "Not connected";
 
     if (connected) {
-        cardBorderClass = "border-green-500/30";
+        cardBorderClass = "border-emerald-500/20";
         iconWrapperClass =
-            "border-green-500/40 bg-green-500/10 text-green-700 dark:text-green-400";
+            "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400";
         statusTone = "success";
         statusLabel = "Connected";
     }
 
     return (
-        <div className="flex flex-1 flex-col gap-6 p-6">
-            <Card className={cn("max-w-2xl transition-colors", cardBorderClass)}>
+        <div className="flex flex-1 flex-col gap-6 p-6 lg:p-8">
+            <Card className={cn("card-premium max-w-2xl", cardBorderClass)}>
                 <CardHeader>
                     <div className="flex items-start justify-between gap-4">
                         <div className="flex items-center gap-3">
                             <span
                                 className={cn(
-                                    "flex size-10 items-center justify-center rounded-none border",
+                                    "flex size-11 items-center justify-center rounded-xl border border-border/50 transition-colors",
                                     iconWrapperClass
                                 )}
                             >
-                                <GithubLogo className="size-5" />
+                                {connected ? (
+                                    <PlugsConnected className="size-5" weight="duotone" />
+                                ) : (
+                                    <GithubLogo className="size-5" />
+                                )}
                             </span>
                             <div>
                                 <CardTitle>GitHub App</CardTitle>
-                                <CardDescription>
+                                <CardDescription className="mt-0.5">
                                     Install the CodeRuby AI Code reviewer app on your GitHub account or
                                     organization to access public and private repositories.
                                 </CardDescription>

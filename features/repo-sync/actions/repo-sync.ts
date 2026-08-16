@@ -4,9 +4,16 @@ import { redirect } from "next/navigation";
 import { getServerSession } from "../../auth/actions";
 import { getUserInstallationId } from "../../github/server/installation";
 import { DASHBOARD_ROUTES } from "../../dashboard/lib/routes";
-import { triggerRepoSync } from "../server/repo-sync";
+import {
+    getRepoSyncStatuses,
+    triggerRepoSync,
+} from "../server/repo-sync";
+import { RepoSyncStatus } from "../types";
 
-export async function syncRepoCodebase(repoFullName: string, branch: string) {
+export async function syncRepoCodebase(
+    repoFullName: string,
+    branch: string,
+) {
     const session = await getServerSession();
 
     if (!session) {
@@ -19,5 +26,17 @@ export async function syncRepoCodebase(repoFullName: string, branch: string) {
         redirect(DASHBOARD_ROUTES.github);
     }
 
-    await triggerRepoSync(installationId, repoFullName, branch);
+    await triggerRepoSync(
+        installationId,
+        repoFullName,
+        branch,
+    );
+}
+
+export async function getRepoSyncStatus(
+    repoFullName: string,
+): Promise<RepoSyncStatus | null> {
+    const statuses = await getRepoSyncStatuses([repoFullName]);
+
+    return (statuses[repoFullName] as RepoSyncStatus) ?? null;
 }

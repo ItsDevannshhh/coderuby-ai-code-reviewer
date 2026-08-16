@@ -96,6 +96,7 @@ export function RepoList() {
         isError,
     } = useInfiniteQuery(githubReposInfiniteQuery);
 
+
     const loading = isPending && !data;
 
     const repos = useMemo(() => {

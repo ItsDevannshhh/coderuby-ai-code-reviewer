@@ -9,7 +9,6 @@ import {
     triggerRepoSync,
 } from "../server/repo-sync";
 import { RepoSyncStatus } from "../types";
-import { repoSyncRateLimit } from "@/features/redis/rate-limit";
 
 export async function syncRepoCodebase(
     repoFullName: string,
@@ -21,30 +20,10 @@ export async function syncRepoCodebase(
         redirect("/sign-in");
     }
 
-    const installationId = await getUserInstallationId(
-        session.user.id,
-    );
+    const installationId = await getUserInstallationId(session.user.id);
 
     if (!installationId) {
         redirect(DASHBOARD_ROUTES.github);
-    }
-
-    /**
-     * Maximum 4 repository syncs per minute
-     * for each authenticated user.
-     */
-    const { success, reset } =
-        await repoSyncRateLimit.limit(session.user.id);
-
-    if (!success) {
-        const retryAfterSeconds = Math.max(
-            1,
-            Math.ceil((reset - Date.now()) / 1000),
-        );
-
-        throw new Error(
-            `Sync limit reached. You can sync up to 4 repositories per minute. Try again in ${retryAfterSeconds} seconds.`,
-        );
     }
 
     await triggerRepoSync(

@@ -14,7 +14,7 @@ export const metadata: Metadata = {
 const DashboardGithubPage = async () => {
 
   const session = await requireAuth();
-  const installation = await getInstallationStatus(session.user.id)
+  const installation = await getInstallationStatus(session.user.id);
 
   return (
     <>

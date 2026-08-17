@@ -17,9 +17,4 @@ export function getGithubApp() {
     return githubApp;
 }
 
-export function getGithubInstallUrl(userId: string) {
-    const url = new URL(`https://github.com/apps/coderuby-ai-code-reviewer/installations/new`);
-    // `state` round-trips through GitHub so we can link the installation to this user.
-    url.searchParams.set("state", userId);
-    return url.toString();
-}
+export { getGithubInstallUrl } from "./github-url";

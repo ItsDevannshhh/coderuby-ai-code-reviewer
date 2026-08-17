@@ -13,7 +13,7 @@ import {
     statusBadge,
     statusButtonClass,
 } from "@/features/dashboard/lib/status-style";
-import { getGithubInstallUrl } from "@/features/github/utils/github-app";
+import { getGithubInstallUrl } from "@/features/github/utils/github-url";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
